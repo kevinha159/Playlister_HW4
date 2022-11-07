@@ -1,5 +1,7 @@
+import { IconButton } from '@mui/material';
 import React, { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function SongCard(props) {
     const { store } = useContext(GlobalStoreContext);
@@ -64,13 +66,14 @@ function SongCard(props) {
                 href={"https://www.youtube.com/watch?v=" + song.youTubeId}>
                 {song.title} by {song.artist}
             </a>
-            <input
-                type="button"
+            <IconButton
                 id={"remove-song-" + index}
                 className="list-card-button"
                 value={"\u2715"}
-                onClick={handleRemoveSong}
-            />
+                onClick={handleRemoveSong}>
+                <DeleteIcon style={{fontSize:'16pt', color:'white'}} />
+
+            </IconButton>
         </div>
     );
 }
