@@ -93,7 +93,7 @@ export default function AppBanner() {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+            <AppBar position="static" id ="app-banner">
                 <Toolbar>
                     <Typography                        
                         variant="h4"
@@ -117,11 +117,12 @@ export default function AppBanner() {
                             { getAccountMenu(auth.loggedIn) }
                         </IconButton>
                     </Box>
+                    {
+                        menu
+                    }
                 </Toolbar>
+
             </AppBar>
-            {
-                menu
-            }
         </Box>
     );
 }

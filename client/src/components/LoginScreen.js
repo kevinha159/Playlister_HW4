@@ -15,14 +15,17 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import GlobalStoreContext from '../store';
+import MUIAccountErrorModal from '../components/MUIAccountErrorModal'
 
 export default function LoginScreen() {
     const { auth } = useContext(AuthContext);
-
+    const {store} = useContext(GlobalStoreContext);
     const handleSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        auth.loginUser(
+        
+        store.loginUser(
             formData.get('email'),
             formData.get('password')
         );
@@ -111,6 +114,7 @@ export default function LoginScreen() {
                     </Box>
                 </Box>
             </Grid>
+            <MUIAccountErrorModal/>
         </Grid>
     );
 }

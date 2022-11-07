@@ -31,7 +31,8 @@ export const GlobalStoreActionType = {
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     EDIT_SONG: "EDIT_SONG",
     REMOVE_SONG: "REMOVE_SONG",
-    HIDE_MODALS: "HIDE_MODALS"
+    HIDE_MODALS: "HIDE_MODALS",
+    ACCOUNT_ALERT: "ACCOUNT_ALERT"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -41,7 +42,8 @@ const CurrentModal = {
     NONE : "NONE",
     DELETE_LIST : "DELETE_LIST",
     EDIT_SONG : "EDIT_SONG",
-    REMOVE_SONG : "REMOVE_SONG"
+    REMOVE_SONG : "REMOVE_SONG",
+    ACCOUNT_ALERT: "ACCOUNT_ALERT"
 }
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
@@ -57,7 +59,8 @@ function GlobalStoreContextProvider(props) {
         newListCounter: 0,
         listNameActive: false,
         listIdMarkedForDeletion: null,
-        listMarkedForDeletion: null
+        listMarkedForDeletion: null,
+        accountAlert: ""
     });
     const history = useHistory();
 
@@ -72,6 +75,23 @@ function GlobalStoreContextProvider(props) {
     const storeReducer = (action) => {
         const { type, payload } = action;
         switch (type) {
+            case GlobalStoreActionType.ACCOUNT_ALERT: {
+                console.log(payload);
+                console.log(CurrentModal.ACCOUNT_ALERT);
+                console.log(store.idNamePairs);
+                return setStore({
+                    currentModal : CurrentModal.ACCOUNT_ALERT,
+                    accountAlert: payload,
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.playlist,
+                    currentSongIndex: store.currentSongIndex,
+                    currentSong: store.currentSong,
+                    newListCounter: store.newListCounter,
+                    listNameActive: store.listNameActive,
+                    listMarkedForDeletion: store.listMarkedForDeletion,
+                    listIdMarkedForDeletion: store.listIdMarkedForDeletion
+                })
+            }
             // LIST UPDATE OF ITS NAME
             case GlobalStoreActionType.CHANGE_LIST_NAME: {
                 return setStore({
@@ -310,6 +330,17 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
+    store.registerUser= function(firstName, lastName, email, password, passwordVerify){
+        async function registerUser(firstName, lastName, email, password, passwordVerify){
+            let res = await auth.registerUser(firstName, lastName, email, password, passwordVerify);
+            if(res){
+                if(res.data.errorMessage){
+                    store.showAccountErrorModal(res.data.errorMessage);
+                }     
+            }
+        }
+        registerUser(firstName, lastName, email, password, passwordVerify);
+    }
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
     store.loadIdNamePairs = function () {
         async function asyncLoadIdNamePairs() {
@@ -328,6 +359,7 @@ function GlobalStoreContextProvider(props) {
         }
         asyncLoadIdNamePairs();
     }
+
     // THE FOLLOWING 5 FUNCTIONS ARE FOR COORDINATING THE DELETION
     // OF A LIST, WHICH INCLUDES USING A VERIFICATION MODAL. THE
     // FUNCTIONS ARE markListForDeletion, deleteList, deleteMarkedList,
@@ -373,6 +405,19 @@ function GlobalStoreContextProvider(props) {
         })
     }
 
+    store.loginUser = function(email, password){
+        async function loginUser(email, password){
+            let res = await auth.loginUser(email, password);
+            if(res){
+                if(res.data.errorMessage){
+                    store.showAccountErrorModal(res.data.errorMessage);
+                }     
+            }
+
+        }
+        loginUser(email, password);
+    }
+
     // THIS FUNCTION SHOWS THE MODAL FOR PROMPTING THE USER
     // TO SEE IF THEY REALLY WANT TO DELETE THE LIST
 
@@ -382,6 +427,16 @@ function GlobalStoreContextProvider(props) {
             payload: {currentSongIndex: songIndex, currentSong: songToEdit}
         });
     }
+
+    store.showAccountErrorModal = (error) => {
+        storeReducer({
+            type: GlobalStoreActionType.ACCOUNT_ALERT,
+            payload: error
+        })
+        console.log(store.accountAlert);
+        console.log(store.currentModal);
+    }
+
     store.showRemoveSongModal = (songIndex, songToRemove) => {
         storeReducer({
             type: GlobalStoreActionType.REMOVE_SONG,
@@ -394,6 +449,7 @@ function GlobalStoreContextProvider(props) {
             payload: {}
         });    
     }
+
     store.isDeleteListModalOpen = () => {
         return store.currentModal === CurrentModal.DELETE_LIST;
     }

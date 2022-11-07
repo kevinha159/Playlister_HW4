@@ -12,14 +12,19 @@ import Link from '@mui/material/Link';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import GlobalStoreContext from '../store';
+import MUIAccountErrorModal from '../components/MUIAccountErrorModal'
+
 
 export default function RegisterScreen() {
     const { auth } = useContext(AuthContext);
+    const {store} = useContext(GlobalStoreContext);
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        auth.registerUser(
+
+        store.registerUser(
             formData.get('firstName'),
             formData.get('lastName'),
             formData.get('email'),
@@ -117,6 +122,7 @@ export default function RegisterScreen() {
                             </Grid>
                         </Grid>
                     </Box>
+                    <MUIAccountErrorModal/>
                 </Box>
                 <Copyright sx={{ mt: 5 }} />
             </Container>
