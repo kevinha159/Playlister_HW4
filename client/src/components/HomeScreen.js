@@ -25,7 +25,7 @@ const HomeScreen = () => {
     let listCard = "";
     if (store) {
         listCard = 
-            <List sx={{ width: '90%', left: '5%', bgcolor: 'background.paper' }}>
+            <List sx={{ width: '90%', left: '5%', bgcolor: '#e6e6e5' }}>
             {
                 store.idNamePairs.map((pair) => (
                     <ListCard
@@ -45,10 +45,12 @@ const HomeScreen = () => {
                 aria-label="add"
                 id="add-list-button"
                 onClick={handleCreateNewList}
+                size="small"
+                sx={{marginTop:-2}}
             >
                 <AddIcon />
             </Fab>
-                <Typography variant="h2">Your Lists</Typography>
+                <Typography sx={{fontSize:48, fontFamily: 'Times New Roman', marginTop:-2}}>Your Lists</Typography>
             </div>
             <div id="list-selector-list">
                 {
