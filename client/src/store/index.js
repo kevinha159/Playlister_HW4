@@ -380,7 +380,7 @@ function GlobalStoreContextProvider(props) {
         storeReducer({
             type: GlobalStoreActionType.EDIT_SONG,
             payload: {currentSongIndex: songIndex, currentSong: songToEdit}
-        });        
+        });
     }
     store.showRemoveSongModal = (songIndex, songToRemove) => {
         storeReducer({
@@ -413,7 +413,6 @@ function GlobalStoreContextProvider(props) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
                 let playlist = response.data.playlist;
-
                 response = await api.updatePlaylistById(playlist._id, playlist);
                 if (response.data.success) {
                     storeReducer({
