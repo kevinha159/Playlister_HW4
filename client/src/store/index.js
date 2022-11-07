@@ -26,6 +26,7 @@ export const GlobalStoreActionType = {
     CREATE_NEW_LIST: "CREATE_NEW_LIST",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION",
+    UNMARK_LIST_FOR_DELETION: "UNMARK_LIST_FOR_DELETION",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     EDIT_SONG: "EDIT_SONG",
@@ -141,6 +142,21 @@ function GlobalStoreContextProvider(props) {
                     listMarkedForDeletion: payload.playlist
                 });
             }
+            //UNMARK LIST
+            case GlobalStoreActionType.UNMARK_LIST_FOR_DELETION: {
+                return setStore({
+                    currentModal : CurrentModal.DELETE_LIST,
+                    idNamePairs: store.idNamePairs,
+                    currentList: null,
+                    currentSongIndex: -1,
+                    currentSong: null,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listIdMarkedForDeletion: null,
+                    listMarkedForDeletion: null
+                });
+            }
+
             // UPDATE A LIST
             case GlobalStoreActionType.SET_CURRENT_LIST: {
                 return setStore({
@@ -224,13 +240,22 @@ function GlobalStoreContextProvider(props) {
         async function asyncChangeListName(id) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
+                console.log("Found list");
                 let playlist = response.data.playlist;
+                console.log(playlist);
+                console.log(newName);
+                if(!newName){
+                    newName = playlist.name;
+                }
+
                 playlist.name = newName;
                 async function updateList(playlist) {
                     response = await api.updatePlaylistById(playlist._id, playlist);
                     if (response.data.success) {
                         async function getListPairs(playlist) {
                             response = await api.getPlaylistPairs();
+                            console.log("Response from changing name");
+                            console.log(response);
                             if (response.data.success) {
                                 let pairsArray = response.data.idNamePairs;
                                 storeReducer({
@@ -241,6 +266,7 @@ function GlobalStoreContextProvider(props) {
                                     }
                                 });
                             }
+                            history.push("/playlist/" + response.data.idNamePairs[0]._id);
                         }
                         getListPairs(playlist);
                     }
@@ -257,6 +283,8 @@ function GlobalStoreContextProvider(props) {
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}
         });
+        history.push("/");
+
         tps.clearAllTransactions();
     }
 
@@ -286,6 +314,7 @@ function GlobalStoreContextProvider(props) {
     store.loadIdNamePairs = function () {
         async function asyncLoadIdNamePairs() {
             const response = await api.getPlaylistPairs();
+            console.log(response);
             if (response.data.success) {
                 let pairsArray = response.data.idNamePairs;
                 storeReducer({
@@ -299,7 +328,6 @@ function GlobalStoreContextProvider(props) {
         }
         asyncLoadIdNamePairs();
     }
-
     // THE FOLLOWING 5 FUNCTIONS ARE FOR COORDINATING THE DELETION
     // OF A LIST, WHICH INCLUDES USING A VERIFICATION MODAL. THE
     // FUNCTIONS ARE markListForDeletion, deleteList, deleteMarkedList,
@@ -317,7 +345,13 @@ function GlobalStoreContextProvider(props) {
         }
         getListToDelete(id);
     }
-    store.deleteList = function (id) {
+
+    store.unmarkListForDeletion = function (){
+        storeReducer({
+            type: GlobalStoreActionType.UNMARK_LIST_FOR_DELETION,
+        });
+    }
+    store.deleteList = (id) => {
         async function processDelete(id) {
             let response = await api.deletePlaylistById(id);
             if (response.data.success) {
@@ -327,10 +361,18 @@ function GlobalStoreContextProvider(props) {
         }
         processDelete(id);
     }
+
     store.deleteMarkedList = function() {
-        store.deleteList(store.listIdMarkedForDeletion);
+        let promise = new Promise((resolve, reject)=>{
+            store.deleteList(store.listIdMarkedForDeletion);
+            resolve();
+        });
         store.hideModals();
+        promise.then(()=>{
+            store.loadIdNamePairs();
+        })
     }
+
     // THIS FUNCTION SHOWS THE MODAL FOR PROMPTING THE USER
     // TO SEE IF THEY REALLY WANT TO DELETE THE LIST
 
