@@ -2,12 +2,12 @@ import { IconButton } from '@mui/material';
 import React, { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import Box from '@mui/material/Box';
 function SongCard(props) {
     const { store } = useContext(GlobalStoreContext);
     const [ draggedTo, setDraggedTo ] = useState(0);
     const { song, index } = props;
-
+    const [color, setColor] = useState("");
     function handleDragStart(event) {
         event.dataTransfer.setData("song", index);
     }
@@ -40,6 +40,9 @@ function SongCard(props) {
     }
     function handleClick(event) {
         // DOUBLE CLICK IS FOR SONG EDITING
+        // if (event.detail === 1) {
+            
+        // }
         if (event.detail === 2) {
             store.showEditSongModal(index, song);
         }
@@ -47,6 +50,7 @@ function SongCard(props) {
 
     let cardClass = "list-card unselected-list-card";
     return (
+        <Box>
         <div
             key={index}
             id={'song-' + index + '-card'}
@@ -75,6 +79,7 @@ function SongCard(props) {
 
             </IconButton>
         </div>
+        </Box>
     );
 }
 
