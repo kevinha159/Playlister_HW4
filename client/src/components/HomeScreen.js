@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { GlobalStoreContext } from '../store'
-import ListCard from './ListCard.js'
+import ListAccordion from './ListAccordion.js'
 import MUIDeleteModal from './MUIDeleteModal'
 
 import AddIcon from '@mui/icons-material/Add';
@@ -19,16 +19,14 @@ const HomeScreen = () => {
         store.loadIdNamePairs();
     }, []);
 
-    function handleCreateNewList() {
-        store.createNewList();
-    }
+
     let listCard = "";
     if (store) {
         listCard = 
             <List sx={{ width: '90%', left: '5%', bgcolor: '#e6e6e5' }}>
             {
                 store.idNamePairs.map((pair) => (
-                    <ListCard
+                    <ListAccordion
                         key={pair._id}
                         idNamePair={pair}
                         selected={false}
@@ -39,19 +37,6 @@ const HomeScreen = () => {
     }
     return (
         <div id="playlist-selector">
-            <div id="list-selector-heading">
-            <Fab 
-                color="primary" 
-                aria-label="add"
-                id="add-list-button"
-                onClick={handleCreateNewList}
-                size="small"
-                sx={{marginTop:-2}}
-            >
-                <AddIcon />
-            </Fab>
-                <Typography sx={{fontSize:48, fontFamily: 'Times New Roman', marginTop:-2}}>Your Lists</Typography>
-            </div>
             <div id="list-selector-list">
                 {
                     listCard
