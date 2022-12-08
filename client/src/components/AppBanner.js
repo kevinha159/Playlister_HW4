@@ -13,6 +13,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Playlisterlogo from '../Playlisterlogo.png'
+
 
 export default function AppBanner() {
     const { auth } = useContext(AuthContext);
@@ -71,15 +73,11 @@ export default function AppBanner() {
             onClose={handleMenuClose}
         >
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
-        </Menu>        
-
-    let editToolbar = "";
+        </Menu>      
+    
     let menu = loggedOutMenu;
     if (auth.loggedIn) {
         menu = loggedInMenu;
-        if (store.currentList) {
-            editToolbar = <EditToolbar />;
-        }
     }
 
     function getAccountMenu(loggedIn) {
@@ -95,16 +93,10 @@ export default function AppBanner() {
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" id ="app-banner">
                 <Toolbar>
-                    <Typography                        
-                        variant="h4"
-                        noWrap
-                        component="div"
-                        sx={{ display: { xs: 'none', sm: 'block' } }}                        
-                    >
-                        <Link style={{ textDecoration: 'none', color: 'white' }} to='/'>⌂</Link>
-                    </Typography>
-                    <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box>
-                    <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                    <img id = "playlister-logo-small"src={Playlisterlogo} alt = ""/>
+                    <Box sx={{ flexGrow: 1 }}></Box>
+
+                    <Box sx={{ display: { xs: 'none', md: 'flex', float:'right' } }}>
                         <IconButton
                             size="large"
                             edge="end"
@@ -112,7 +104,7 @@ export default function AppBanner() {
                             aria-controls={menuId}
                             aria-haspopup="true"
                             onClick={handleProfileMenuOpen}
-                            color="inherit"
+                            sx={{backgroundColor:'violet'}}
                         >
                             { getAccountMenu(auth.loggedIn) }
                         </IconButton>
